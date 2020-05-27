@@ -2,6 +2,8 @@
 
 The aim of this project is to deploy a Cloudera cluster on Vagrant Linux instances (CentOS).
 
+The Ansible roles used in this project have been developed by the Cloudera community and the original project can be find on Github : https://github.com/cloudera/cloudera-playbook
+
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
