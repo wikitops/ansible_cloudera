@@ -1,0 +1,75 @@
+---
+# Cloudera playbook
+
+- name: Configure Cloudera Manager Repository
+  hosts: cdh_servers
+  roles:
+    - cm_repo
+  tags: cm_repo
+
+- name: Install rngd
+  hosts: cdh_servers
+  roles:
+    - rngd
+  tags: rngd
+
+- name: Install Java
+  hosts: cdh_servers
+  roles:
+    - java
+  tags: java
+
+- name: Install MariaDB and create databases
+  hosts: db_server
+  roles:
+    - mariadb
+  tags:
+    - mysql
+    - mysql_server
+
+- name: Install MySQL Connector
+  hosts: cdh_servers
+  roles:
+    - mysql_connector
+  tags:
+    - mysql
+    - mysql_client
+
+- name: Install MIT KDC Server
+  hosts: krb5_server
+  roles:
+    - krb5/server
+  tags: krb5
+
+- name: Install MIT KDC Client
+  hosts: all
+  roles:
+    - { role: krb5/client, when: (krb5_kdc_type is defined) and (krb5_kdc_type != 'none') }
+  tags:
+    - krb5
+    - krb5_client
+
+- name: Configure EPEL Repository
+  hosts: scm_server
+  roles:
+    - epel
+  tags: epel
+
+- name: Install Cloudera Manager Agents
+  hosts: cdh_servers
+  roles:
+    - cm_agents
+  tags: cm_agents
+
+- name: Install Cloudera Manager Server
+  hosts: scm_server
+  roles:
+    - scm
+  tags: cluster_template
+
+- name: Install CDH
+  hosts: scm_server
+  roles:
+    - cdh
+  tags: cluster_template
+

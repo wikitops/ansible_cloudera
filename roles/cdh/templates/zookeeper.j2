@@ -1,0 +1,24 @@
+{
+  "refName": "ZOOKEEPER-1",
+  "serviceType": "ZOOKEEPER",
+  "serviceConfigs": [
+    {
+      "name": "zookeeper_datadir_autocreate",
+      "value": "true"
+    }
+    {% if (krb5_kdc_type is defined) and (krb5_kdc_type != 'none') %}
+    ,{
+       "name" : "enableSecurity",
+       "value" : "true",
+     }
+    {% endif %}
+  ],
+  "roleConfigGroups": [
+    {
+      "refName": "ZOOKEEPER-1-SERVER-BASE",
+      "roleType": "SERVER",
+      "configs": [],
+      "base": true
+    }
+  ]
+}

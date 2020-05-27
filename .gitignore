@@ -1,0 +1,10 @@
+*.py[cod]
+*.so
+*.iml
+.idea/
+.DS_Store
+*test*
+*.retry
+.vagrant
+venv
+inventory/vagrant_ansible_inventory

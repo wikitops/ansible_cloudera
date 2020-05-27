@@ -1,0 +1,50 @@
+---
+
+- name: Check license file exists
+  stat:
+    path: "{{ scm_license_file }}"
+  register: file
+
+- debug:
+    msg: "License file '{{ scm_license_file }}' exists = {{ file.stat.exists }}"
+    verbosity: 1
+
+# https://cloudera.github.io/cm_api/apidocs/v12/path__cm_license.html
+- name: Upload license file to Cloudera Manager
+  shell: >
+    curl
+    -u {{ scm_default_user }}:{{ scm_default_pass }}
+    -X POST -H 'Content-Type:multipart/form-data'
+    -F license=@{{ scm_license_file }}
+    {{ cm_api_url }}/cm/license
+  args:
+    warn: False
+  register: resp
+  failed_when: "'owner' not in resp.stdout"
+  notify:
+    - restart cloudera-scm-server
+  when: file.stat.exists
+
+- debug:
+    var: resp
+    verbosity: 1
+
+# https://cloudera.github.io/cm_api/apidocs/v12/path__cm_trial_begin.html
+- name: Begin Cloudera Manager trial license
+  uri:
+    url: "{{ cm_api_url }}/cm/trial/begin"
+    method: POST
+    # Supported Status codes:
+    # 204: when posting trial/begin (the 1.time)
+    # 400: when posting trial/begin after trial has begun 
+    status_code: 200,204,400
+    force_basic_auth: yes
+    user: "{{ scm_default_user }}"
+    password: "{{ scm_default_pass }}"
+  notify:
+    - restart cloudera-scm-server
+  when: not file.stat.exists
+
+- meta: flush_handlers
+
+
